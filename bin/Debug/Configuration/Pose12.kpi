@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<KinectPoseInfo>
+  <PoseInfo Name="BOTH_SIDE_OUT">
+    <PoseFeature Name="ELA" MinValue="10" MaxValue="20" />
+    <PoseFeature Name="ERA" MinValue="10" MaxValue="20" />
+    <PoseFeature Name="SLA" MinValue="10" MaxValue="20" />
+    <PoseFeature Name="SRA" MinValue="10" MaxValue="20" />
+    <PoseFeature Name="KLA" MinValue="15" MaxValue="25" />
+    <PoseFeature Name="KRA" MinValue="15" MaxValue="25" />
+  </PoseInfo>
+  <PoseInfo Name="BOTH_SIDE_UP">
+    <PoseFeature Name="ELA" MinValue="10" MaxValue="20" />
+    <PoseFeature Name="ERA" MinValue="10" MaxValue="20" />
+    <PoseFeature Name="ULA" MinValue="20" MaxValue="40" />
+    <PoseFeature Name="URA" MinValue="20" MaxValue="40" />
+    <PoseFeature Name="KLA" MinValue="15" MaxValue="25" />
+    <PoseFeature Name="KRA" MinValue="15" MaxValue="25" />
+  </PoseInfo>
+  <PoseInfo Name="BOTH_SIDE_FRONT">
+    <PoseFeature Name="ELA" MinValue="15" MaxValue="25" />
+    <PoseFeature Name="ERA" MinValue="15" MaxValue="25" />
+    <PoseFeature Name="FLA" MinValue="20" MaxValue="40" />
+    <PoseFeature Name="FRA" MinValue="20" MaxValue="40" />
+    <PoseFeature Name="KLA" MinValue="15" MaxValue="25" />
+    <PoseFeature Name="KRA" MinValue="15" MaxValue="25" />
+  </PoseInfo>
+  <PoseInfo Name="BOTH_SIDE_DOWN">
+    <PoseFeature Name="ELA" MinValue="20" MaxValue="35" />
+    <PoseFeature Name="ERA" MinValue="20" MaxValue="35" />
+    <PoseFeature Name="DLA" MinValue="15" MaxValue="25" />
+    <PoseFeature Name="DRA" MinValue="15" MaxValue="25" />
+    <PoseFeature Name="KLA" MinValue="15" MaxValue="25" />
+    <PoseFeature Name="KRA" MinValue="15" MaxValue="25" />
+    <PoseFeature Name="LLA" MinValue="10" MaxValue="20" />
+    <PoseFeature Name="LRA" MinValue="10" MaxValue="20" />
+  </PoseInfo>
+  <PoseInfo Name="ONLY_LEFT_HAND_UP">
+    <PoseFeature Name="ELA" MinValue="15" MaxValue="25" />
+    <PoseFeature Name="ULA" MinValue="20" MaxValue="40" />
+    <PoseFeature Name="DRA" MinValue="20" MaxValue="40" />
+    <PoseFeature Name="KLA" MinValue="15" MaxValue="25" />
+    <PoseFeature Name="KRA" MinValue="15" MaxValue="25" />
+  </PoseInfo>
+  <PoseInfo Name="ONLY_RIGHT_HAND_UP">
+    <PoseFeature Name="ERA" MinValue="15" MaxValue="25" />
+    <PoseFeature Name="URA" MinValue="20" MaxValue="40" />
+    <PoseFeature Name="DLA" MinValue="20" MaxValue="40" />
+    <PoseFeature Name="KLA" MinValue="15" MaxValue="25" />
+    <PoseFeature Name="KRA" MinValue="15" MaxValue="25" />
+  </PoseInfo>
+  <PoseInfo Name="ONLY_LEFT_KNEE_UP">
+    <PoseFeature Name="DLA" MinValue="15" MaxValue="25" />
+    <PoseFeature Name="DRA" MinValue="15" MaxValue="25" />
+    <PoseFeature Name="KRA" MinValue="10" MaxValue="20" />
+    <PoseFeature Name="KLA90" MinValue="10" MaxValue="25" />
+    <PoseFeature Name="LRA" MinValue="10" MaxValue="25" />
+  </PoseInfo>
+  <PoseInfo Name="ONLY_RIGHT_KNEE_UP">
+    <PoseFeature Name="DLA" MinValue="15" MaxValue="25" />
+    <PoseFeature Name="DRA" MinValue="15" MaxValue="25" />
+    <PoseFeature Name="KLA" MinValue="10" MaxValue="20" />
+    <PoseFeature Name="KRA90" MinValue="10" MaxValue="25" />
+    <PoseFeature Name="LLA" MinValue="10" MaxValue="25" />
+  </PoseInfo>
+  <PoseInfo Name="ONLY_LEFT_LEG_AB">
+    <PoseFeature Name="KLA" MinValue="15" MaxValue="25" />
+    <PoseFeature Name="KRA" MinValue="15" MaxValue="25" />
+    <PoseFeature Name="LRA" MinValue="10" MaxValue="20" />
+    <PoseFeature Name="LLA45" MinValue="15" MaxValue="25" />
+  </PoseInfo>
+  <PoseInfo Name="ONLY_RIGHT_LEG_AB">
+    <PoseFeature Name="KLA" MinValue="15" MaxValue="25" />
+    <PoseFeature Name="KRA" MinValue="15" MaxValue="25" />
+    <PoseFeature Name="LLA" MinValue="10" MaxValue="20" />
+    <PoseFeature Name="LRA45" MinValue="15" MaxValue="25" />
+  </PoseInfo>
+  <PoseInfo Name="BOTH_HAND_TOUCH">
+    <PoseFeature Name="KLA" MinValue="15" MaxValue="25" />
+    <PoseFeature Name="KRA" MinValue="15" MaxValue="25" />
+    <PoseFeature Name="AD" MinValue="0.05" MaxValue="0.15" />
+    <PoseFeature Name="HD" MinValue="0.05" MaxValue="0.15" />
+  </PoseInfo>
+  <PoseInfo Name="SQUAT">
+    <PoseFeature Name="KLA90" MinValue="12" MaxValue="22" />
+    <PoseFeature Name="KRA90" MinValue="12" MaxValue="22" />
+    <PoseFeature Name="SSA" MinValue="20" MaxValue="40" />
+  </PoseInfo>
+</KinectPoseInfo>
