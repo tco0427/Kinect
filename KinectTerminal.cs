@@ -414,6 +414,7 @@ namespace KinectTerminal
             path = string.Format("c:\\KinectPose\\kinect_angle_{0:D4}{1:D2}{2:D2}{3:D2}{4:D2}{5:D2}.csv", date.Year, date.Month, date.Day, date.Hour, date.Minute, date.Second);
             using (FileStream fs = new FileStream(path, FileMode.CreateNew, FileAccess.Write))
             {
+                Stopwatch stopwatch = new Stopwatch();
                 StreamWriter sw = new StreamWriter(fs, System.Text.Encoding.Default);
 
                 var count = 0;
@@ -428,6 +429,7 @@ namespace KinectTerminal
                 var klaSum = 0.0;
                 var kraSum = 0.0;
 
+                stopwatch.Start();
                 foreach (var feature in featureList)
                 {
                     double[] featurePoints=feature.getFeaturePoints();
@@ -455,13 +457,17 @@ namespace KinectTerminal
                         kraValue = getKra;
                     }
                 }
+                stopwatch.Stop();
+                var elapse = stopwatch.ElapsedMiliiseconds / 1000;
 
-
-                
                 sw.WriteLine(elaSum);
                 sw.WriteLine(eraSum);
                 sw.WriteLine(klaSum);
                 sw.WriteLine(kraSum);
+
+                sw.WriteLine((elaSum+eraSum)/elapse);
+                sw.WriteLine((klaSum+kraSum)/elapse);
+
                 sw.Close();
             }
 
