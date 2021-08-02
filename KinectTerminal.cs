@@ -287,7 +287,7 @@ namespace KinectTerminal
 
         private void createTimer(){
             timer = new System.Windows.Forms.Timer();
-            timer.Interval = 5 * 1000;
+            timer.Interval = 60 * 1000;
             timer.Tick += new EventHandler(exitProgram);
         }
         
@@ -418,35 +418,50 @@ namespace KinectTerminal
 
                 var count = 0;
 
-                var elaValue=0.0;
-                var eraValue=0.0;
+                var elaValue = 0.0;
+                var eraValue = 0.0;
+                var klaValue = 0.0;
+                var kraValue = 0.0;
                 
-                var elaSum=0.0;
-                var eraSum=0.0;
+                var elaSum = 0.0;
+                var eraSum = 0.0;
+                var klaSum = 0.0;
+                var kraSum = 0.0;
 
                 foreach (var feature in featureList)
                 {
                     double[] featurePoints=feature.getFeaturePoints();
 
                     if(count == 0){
-                        elaValue=featurePoints[0];
-                        eraValue=featurePoints[1];
+                        elaValue = featurePoints[0];
+                        eraValue = featurePoints[1];
+                        klaValue = featurePoints[10];
+                        kraValue = featurePoints[11];
                         count++;
+                    }else{
+                        double getEla = featurePoints[0];   //ela
+                        double getEra = featurePoints[1];   //era
+                        double getKla = featurePoints[10];  //kla
+                        double getKra = featurePoints[11];  //kra
+
+                        elaSum = Math.Abs(getEla - elaValue) + elaSum;
+                        eraSum = Math.Abs(getEra - eraValue) + eraSum;
+                        klaSum = Math.Abs(getKla - klaValue) + klaSum;
+                        kraSum = Math.Abs(getKra - kraValue) + kraSum;
+
+                        elaValue = getEla;
+                        eraValue = getEra;
+                        klaValue = getKla;
+                        kraValue = getKra;
                     }
-
-                    double getEla=featurePoints[0];   //ela
-                    double getEra=featurePoints[1];   //era
-
-                    elaSum=Math.Abs(getEla-elaValue) + elaSum;
-                    eraSum=Math.Abs(getEra-eraValue) + eraSum;
-
-                    elaValue=getEla;
-                    eraValue=getEra;
-
                 }
+
+
                 
                 sw.WriteLine(elaSum);
                 sw.WriteLine(eraSum);
+                sw.WriteLine(klaSum);
+                sw.WriteLine(kraSum);
                 sw.Close();
             }
 
