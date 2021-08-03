@@ -14,8 +14,6 @@ namespace KinectTerminal
 {
     public partial class KinectTerminal : Form
     {
-        private const string Path = "C:\\KinectPose";
-
         // kinect machine
         KinectMachine kinect;
         // kinect image viewer
@@ -29,6 +27,9 @@ namespace KinectTerminal
         private List<PoseFeature> featureList = new List<PoseFeature>();
         private List<double[]> rateList = new List<double[]>();
         private List<PoseDetailRate> detailRateList = new List<PoseDetailRate>();
+        private float startTime;
+        private float finishTime;
+        private System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
 
         public KinectTerminal()
         {
@@ -277,102 +278,79 @@ namespace KinectTerminal
             // call the base class to handle other key events
             return base.ProcessCmdKey(ref msg, keyData);
         }
-        private void exitProgram(object sender, EventArgs e)
-        {
-            stopProgram();
-            //toggleButton1.Checked = true;
-        }
-
-        private static Timer timer =null;
-
-        private void createTimer(){
-            timer = new System.Windows.Forms.Timer();
-            timer.Interval = 60 * 1000;
-            timer.Tick += new EventHandler(exitProgram);
-        }
-        
 
         private void toggleButton1_Click(object sender, EventArgs e)
         {
-            DirectoryInfo di = new DirectoryInfo(Path);
-            if (di.Exists == false)
+            if (toggleButton1.Checked)   // start recording when checked
             {
-                di.Create();
+                // start recording
+                timer1.Start(); // start timer
+                timer1.Interval = 10;
+                System.Diagnostics.Trace.WriteLine("Timer start " + DateTime.Now.ToString());
+                stopwatch.Reset();
+                stopwatch.Start();
             }
-            
-           
-            
-            if (toggleButton1.Checked)
+            else                // stop recording when unchecked
             {
-                if(timer == null){
-                    createTimer();
-                }
-                timer.Start();
-                startProgram();
-            }
-            else
-            {
-                timer.Stop();
-                stopProgram();
-            }
-        }
+                // stop recording & save into the file
+                timer1.Stop(); // stop timer
+                System.Diagnostics.Trace.WriteLine("Timer stop");
+                stopwatch.Stop();
 
-        private void stopProgram()
-        {
-            // stop recording & save into the file
-            timer1.Stop(); // stop timer
-            System.Diagnostics.Trace.WriteLine("Timer stop");
+                float processTime = stopwatch.ElapsedMilliseconds/1000.0f;
 
-            DateTime date = DateTime.Now;
-            string path = string.Format("c:\\KinectPose\\kinect_rate_{0:D4}{1:D2}{2:D2}{3:D2}{4:D2}{5:D2}.csv", date.Year, date.Month, date.Day, date.Hour, date.Minute, date.Second);
-            using (FileStream fs = new FileStream(path, FileMode.Create, FileAccess.Write))
-            {
-                StreamWriter sw = new StreamWriter(fs, System.Text.Encoding.Default);
-                foreach (var rate in rateList)
+                DateTime date = DateTime.Now;
+                string path = string.Format("c:\\kinect_origin\\kinect_rate_{0:D4}{1:D2}{2:D2}{3:D2}{4:D2}{5:D2}.csv", date.Year, date.Month, date.Day, date.Hour, date.Minute, date.Second);
+                using (FileStream fs = new FileStream(path, FileMode.CreateNew, FileAccess.Write))
                 {
-                    for (int i = 0; i < 11; i++)
+                    StreamWriter sw = new StreamWriter(fs, System.Text.Encoding.Default);
+                    foreach (var rate in rateList)
                     {
-                        sw.Write("{0},", rate[i]);
+                        for (int i = 0; i < 11; i++)
+                        {
+                            sw.Write("{0},", rate[i]);
+                        }
+                        sw.WriteLine(rate[11]);
                     }
-                    sw.WriteLine(rate[11]);
+                    sw.Close();
                 }
-                sw.Close();
-            }
-            path = string.Format("c:\\KinectPose\\kinect_feature_{0:D4}{1:D2}{2:D2}{3:D2}{4:D2}{5:D2}.csv", date.Year, date.Month, date.Day, date.Hour, date.Minute, date.Second);
-            using (FileStream fs = new FileStream(path, FileMode.CreateNew, FileAccess.Write))
-            {
-                StreamWriter sw = new StreamWriter(fs, System.Text.Encoding.Default);
-                foreach (var feature in featureList)
+                path = string.Format("c:\\kinect_origin\\kinect_feature_{0:D4}{1:D2}{2:D2}{3:D2}{4:D2}{5:D2}.csv", date.Year, date.Month, date.Day, date.Hour, date.Minute, date.Second);
+                using (FileStream fs = new FileStream(path, FileMode.CreateNew, FileAccess.Write))
                 {
-                    sw.WriteLine(feature);
+                    StreamWriter sw = new StreamWriter(fs, System.Text.Encoding.Default);
+                    foreach (var feature in featureList)
+                    {
+                        sw.WriteLine(feature);
+                    }
+                    sw.Close();
                 }
-                sw.Close();
-            }
-            path = string.Format("c:\\KinectPose\\kinect_skeleton_{0:D4}{1:D2}{2:D2}{3:D2}{4:D2}{5:D2}.csv", date.Year, date.Month, date.Day, date.Hour, date.Minute, date.Second);
-            using (FileStream fs = new FileStream(path, FileMode.CreateNew, FileAccess.Write))
-            {
-                StreamWriter sw = new StreamWriter(fs, System.Text.Encoding.Default);
-                foreach (var skeleton in skeletonList)
+                path = string.Format("c:\\kinect_origin\\kinect_skeleton_{0:D4}{1:D2}{2:D2}{3:D2}{4:D2}{5:D2}.csv", date.Year, date.Month, date.Day, date.Hour, date.Minute, date.Second);
+                using (FileStream fs = new FileStream(path, FileMode.CreateNew, FileAccess.Write))
                 {
-                    //System.Diagnostics.Trace.WriteLine("SAVE: " + skeleton);
-                    sw.WriteLine(skeleton);
+                    StreamWriter sw = new StreamWriter(fs, System.Text.Encoding.Default);
+                    foreach (var skeleton in skeletonList)
+                    {
+                        //System.Diagnostics.Trace.WriteLine("SAVE: " + skeleton);
+                        sw.WriteLine(skeleton);
+                    }
+                    sw.Close();
                 }
-                sw.Close();
-            }
-            path = string.Format("c:\\KinectPose\\kinect_detailrate_{0:D4}{1:D2}{2:D2}{3:D2}{4:D2}{5:D2}.csv", date.Year, date.Month, date.Day, date.Hour, date.Minute, date.Second);
-            using (FileStream fs = new FileStream(path, FileMode.CreateNew, FileAccess.Write))
-            {
-                StreamWriter sw = new StreamWriter(fs, System.Text.Encoding.Default);
-                foreach (var detailrate in detailRateList)
+                path = string.Format("c:\\kinect_origin\\kinect_detailrate_{0:D4}{1:D2}{2:D2}{3:D2}{4:D2}{5:D2}.csv", date.Year, date.Month, date.Day, date.Hour, date.Minute, date.Second);
+                using (FileStream fs = new FileStream(path, FileMode.CreateNew, FileAccess.Write))
                 {
-                    sw.WriteLine(detailrate);
+                    StreamWriter sw = new StreamWriter(fs, System.Text.Encoding.Default);
+                    foreach (var detailrate in detailRateList)
+                    {
+                        sw.WriteLine(detailrate);
+                    }
+                    sw.Close();
                 }
-                sw.Close();
-            }
-            path = string.Format("c:\\KinectPose\\kinect_momentum_{0:D4}{1:D2}{2:D2}{3:D2}{4:D2}{5:D2}.csv", date.Year, date.Month, date.Day, date.Hour, date.Minute, date.Second);
-            using (FileStream fs = new FileStream(path, FileMode.CreateNew, FileAccess.Write))
-            {
-                StreamWriter sw = new StreamWriter(fs, System.Text.Encoding.Default);
+
+                //이동변화량, 속도
+                path = string.Format("c:\\kinect_origin\\kinect_moveDifference_{0:D4}{1:D2}{2:D2}{3:D2}{4:D2}{5:D2}.csv", date.Year, date.Month, date.Day, date.Hour, date.Minute, date.Second);
+                using (FileStream fs = new FileStream(path, FileMode.CreateNew, FileAccess.Write))
+                {
+                    StreamWriter sw = new StreamWriter(fs, System.Text.Encoding.Default);
                 var x=0.0;
                 var y=0.0;
                 var z=0.0;
@@ -382,113 +360,107 @@ namespace KinectTerminal
                 var sumZ=0.0;
 
                 var euculidDistance = 0.0;
+
                 foreach ( var skeleton in skeletonList){
-                    var diffX = skeleton.xJoints[1].X;
-                    var diffY = skeleton.xJoints[1].Y;
-                    var diffZ = skeleton.xJoints[1].Z;
 
-                    var absX = Math.Abs(diffX - x);
-                    var absY = Math.Abs(diffY - y);
-                    var absZ = Math.Abs(diffZ - z);
+                    if(skeletonList.IndexOf(skeleton)==0){
+                         absX = skeleton.xJoints[1].X;
+                         absY = skeleton.xJoints[1].Y;
+                         absZ = skeleton.xJoints[1].Z;
+                    }else{
+                        var diffX = skeleton.xJoints[1].X;
+                        var diffY = skeleton.xJoints[1].Y;
+                        var diffZ = skeleton.xJoints[1].Z;
 
-                    euculidDistance = (Math.Sqrt((absX * absX)+(absY * absY) + (absZ * absZ))) + euculidDistance;
+                        var absX = Math.Abs(diffX - x);
+                        var absY = Math.Abs(diffY - y);
+                        var absZ = Math.Abs(diffZ - z);
 
-                    
-                    sumX=absX+sumX;
-                    sumY=absY+sumY;
-                    sumZ=absZ+sumZ;
+                        euculidDistance = (Math.Sqrt((absX * absX)+(absY * absY) + (absZ * absZ))) + euculidDistance;
+
+                        sumX=absX+sumX;
+                        sumY=absY+sumY;
+                        sumZ=absZ+sumZ;
                   
-
-                    x=diffX;
-                    y=diffY;
-                    z=diffZ;
+                        x=diffX;
+                        y=diffY;
+                        z=diffZ;
+                    }
                 }
 
                 sw.WriteLine(sumX);
                 sw.WriteLine(sumY);
                 sw.WriteLine(sumZ);
                 sw.WriteLine(euculidDistance);
+                sw.WriteLine(processTime);
+                sw.WriteLine(euculidDistance/processTime);
 
                 sw.Close();
-            }
-            path = string.Format("c:\\KinectPose\\kinect_angle_{0:D4}{1:D2}{2:D2}{3:D2}{4:D2}{5:D2}.csv", date.Year, date.Month, date.Day, date.Hour, date.Minute, date.Second);
-            using (FileStream fs = new FileStream(path, FileMode.CreateNew, FileAccess.Write))
-            {
-                Stopwatch stopwatch = new Stopwatch();
-                StreamWriter sw = new StreamWriter(fs, System.Text.Encoding.Default);
+                }
 
-                var count = 0;
+                //각 변화량, 각속도
+                path = string.Format("c:\\kinect_origin\\kinect_angle_{0:D4}{1:D2}{2:D2}{3:D2}{4:D2}{5:D2}.csv", date.Year, date.Month, date.Day, date.Hour, date.Minute, date.Second);
+                using (FileStream fs = new FileStream(path, FileMode.CreateNew, FileAccess.Write))
+                {
+                    StreamWriter sw = new StreamWriter(fs, System.Text.Encoding.Default);
 
-                var elaValue = 0.0;
-                var eraValue = 0.0;
-                var klaValue = 0.0;
-                var kraValue = 0.0;
+                var elaValue=0.0;
+                var eraValue=0.0;
+                var klaValue=0.0;
+                var kraValue=0.0;
                 
-                var elaSum = 0.0;
-                var eraSum = 0.0;
-                var klaSum = 0.0;
-                var kraSum = 0.0;
+                var elaSum=0.0;
+                var eraSum=0.0;
+                var klaSum=0.0;
+                var kraSum=0.0;
 
-                stopwatch.Start();
                 foreach (var feature in featureList)
                 {
                     double[] featurePoints=feature.getFeaturePoints();
 
-                    if(count == 0){
-                        elaValue = featurePoints[0];
-                        eraValue = featurePoints[1];
-                        klaValue = featurePoints[10];
-                        kraValue = featurePoints[11];
-                        count++;
-                    }else{
-                        double getEla = featurePoints[0];   //ela
-                        double getEra = featurePoints[1];   //era
-                        double getKla = featurePoints[10];  //kla
-                        double getKra = featurePoints[11];  //kra
+                    if(featureList.IndexOf(feature)==0){
+                        elaValue=featurePoints[0];
+                        eraValue=featurePoints[1];
+                        klaValue=featurePoints[10];
+                        kraValue=featurePoints[11];
+                    }
+                    else{
+                        double getEla=featurePoints[0];   //ela
+                        double getEra=featurePoints[1];   //era
+                        double getKla=featurePoints[10];  //kla
+                        double getKra=featurePoints[11];  //kra
 
-                        elaSum = Math.Abs(getEla - elaValue) + elaSum;
-                        eraSum = Math.Abs(getEra - eraValue) + eraSum;
-                        klaSum = Math.Abs(getKla - klaValue) + klaSum;
-                        kraSum = Math.Abs(getKra - kraValue) + kraSum;
+                        elaSum=Math.Abs(getEla-elaValue) + elaSum;
+                        eraSum=Math.Abs(getEra-eraValue) + eraSum;
+                        klaSum=Math.Abs(getKla-klaValue) + klaSum;
+                        kraSum=Math.Abs(getKra-kraValue) + kraSum;
 
-                        elaValue = getEla;
-                        eraValue = getEra;
-                        klaValue = getKla;
-                        kraValue = getKra;
+                        elaValue=getEla;
+                        eraValue=getEra;
+                        klaValue=getKla;
+                        kraValue=getKra;
                     }
                 }
-                stopwatch.Stop();
-                var elapse = stopwatch.ElapsedMiliiseconds / 1000;
-
+                
                 sw.WriteLine(elaSum);
+                sw.WriteLine(elaSum/processTime);
                 sw.WriteLine(eraSum);
+                sw.WriteLine(eraSum/processTime);
                 sw.WriteLine(klaSum);
+                sw.WriteLine(klaSum/processTime);
                 sw.WriteLine(kraSum);
-
-                sw.WriteLine((elaSum+eraSum)/elapse);
-                sw.WriteLine((klaSum+kraSum)/elapse);
-
+                sw.WriteLine(kraSum/processTime);
                 sw.Close();
+                }
+
+                rateList.Clear();
+                featureList.Clear();
+                skeletonList.Clear();
+                detailRateList.Clear();
+                stopwatch.Reset();
+                processTime = 0.0f;
+                MessageBox.Show("포즈데이터를 저장했습니다.\n" + DateTime.Now.ToString(), path);
             }
-
-            rateList.Clear();
-            featureList.Clear();
-            skeletonList.Clear();
-            detailRateList.Clear();
-            MessageBox.Show("포즈데이터를 저장했습니다.\n" + DateTime.Now.ToString(), path);
-        }
-        private void startProgram()
-        {
-            
-            // start recording
-            timer1.Start(); // start timer
-            timer1.Interval = 100;
-            System.Diagnostics.Trace.WriteLine("Timer start " + DateTime.Now.ToString());
-        }
-
-        private void KinectTerminal_Load(object sender, EventArgs e)
-        {
-
         }
     }
 }
