@@ -290,7 +290,7 @@ namespace KinectTerminal
                 stopwatch.Reset();
                 stopwatch.Start();
             }
-            else                // stop recording when unchecked
+            else// stop recording when unchecked
             {
                 // stop recording & save into the file
                 timer1.Stop(); // stop timer
@@ -345,9 +345,11 @@ namespace KinectTerminal
                     }
                     sw.Close();
                 }
-
-                //이동변화량, 속도
-                path = string.Format("c:\\kinect_origin\\kinect_moveDifference_{0:D4}{1:D2}{2:D2}{3:D2}{4:D2}{5:D2}.csv", date.Year, date.Month, date.Day, date.Hour, date.Minute, date.Second);
+                string value = " ";
+                while(InputBox("Excersise", "(ex. run_5)", ref value) == DialogResult.OK)
+                {
+                //이동변화량, 속도, 각변화량, 각속도 (우리가 필요로하는 data) 
+                path = string.Format("c:\\kinect_origin\\kinect_data_{0:D4}{1:D2}{2:D2}{3:D2}{4:D2}{5:D2}.csv", date.Year, date.Month, date.Day, date.Hour, date.Minute, date.Second);
                 using (FileStream fs = new FileStream(path, FileMode.CreateNew, FileAccess.Write))
                 {
                     StreamWriter sw = new StreamWriter(fs, System.Text.Encoding.Default);
@@ -359,51 +361,6 @@ namespace KinectTerminal
                 var sumY=0.0;
                 var sumZ=0.0;
 
-                var euculidDistance = 0.0;
-
-                foreach ( var skeleton in skeletonList){
-
-                    if(skeletonList.IndexOf(skeleton)==0){
-                         absX = skeleton.xJoints[1].X;
-                         absY = skeleton.xJoints[1].Y;
-                         absZ = skeleton.xJoints[1].Z;
-                    }else{
-                        var diffX = skeleton.xJoints[1].X;
-                        var diffY = skeleton.xJoints[1].Y;
-                        var diffZ = skeleton.xJoints[1].Z;
-
-                        var absX = Math.Abs(diffX - x);
-                        var absY = Math.Abs(diffY - y);
-                        var absZ = Math.Abs(diffZ - z);
-
-                        euculidDistance = (Math.Sqrt((absX * absX)+(absY * absY) + (absZ * absZ))) + euculidDistance;
-
-                        sumX=absX+sumX;
-                        sumY=absY+sumY;
-                        sumZ=absZ+sumZ;
-                  
-                        x=diffX;
-                        y=diffY;
-                        z=diffZ;
-                    }
-                }
-
-                sw.WriteLine(sumX);
-                sw.WriteLine(sumY);
-                sw.WriteLine(sumZ);
-                sw.WriteLine(euculidDistance);
-                sw.WriteLine(processTime);
-                sw.WriteLine(euculidDistance/processTime);
-
-                sw.Close();
-                }
-
-                //각 변화량, 각속도
-                path = string.Format("c:\\kinect_origin\\kinect_angle_{0:D4}{1:D2}{2:D2}{3:D2}{4:D2}{5:D2}.csv", date.Year, date.Month, date.Day, date.Hour, date.Minute, date.Second);
-                using (FileStream fs = new FileStream(path, FileMode.CreateNew, FileAccess.Write))
-                {
-                    StreamWriter sw = new StreamWriter(fs, System.Text.Encoding.Default);
-
                 var elaValue=0.0;
                 var eraValue=0.0;
                 var klaValue=0.0;
@@ -413,6 +370,36 @@ namespace KinectTerminal
                 var eraSum=0.0;
                 var klaSum=0.0;
                 var kraSum=0.0;
+
+                var euculidDistance = 0.0;
+
+                foreach ( var skeleton in skeletonList){
+                    var diffX = skeleton.xJoints[1].X;
+                    var diffY = skeleton.xJoints[1].Y;
+                    var diffZ = skeleton.xJoints[1].Z;
+
+                    var absX = Math.Abs(diffX - x);
+                    var absY = Math.Abs(diffY - y);
+                    var absZ = Math.Abs(diffZ - z);
+
+                    euculidDistance = (Math.Sqrt((absX * absX)+(absY * absY) + (absZ * absZ))) + euculidDistance;
+
+                    if(skeletonList.IndexOf(skeleton)==0){
+                         euculidDistance = 0.0;
+                         absX = 0.0;
+                         absY = 0.0;
+                         absZ = 0.0;
+                    }
+                    
+                    sumX=absX+sumX;
+                    sumY=absY+sumY;
+                    sumZ=absZ+sumZ;
+                  
+
+                    x=diffX;
+                    y=diffY;
+                    z=diffZ;
+                }
 
                 foreach (var feature in featureList)
                 {
@@ -424,35 +411,31 @@ namespace KinectTerminal
                         klaValue=featurePoints[10];
                         kraValue=featurePoints[11];
                     }
-                    else{
-                        double getEla=featurePoints[0];   //ela
-                        double getEra=featurePoints[1];   //era
-                        double getKla=featurePoints[10];  //kla
-                        double getKra=featurePoints[11];  //kra
 
-                        elaSum=Math.Abs(getEla-elaValue) + elaSum;
-                        eraSum=Math.Abs(getEra-eraValue) + eraSum;
-                        klaSum=Math.Abs(getKla-klaValue) + klaSum;
-                        kraSum=Math.Abs(getKra-kraValue) + kraSum;
+                    double getEla=featurePoints[0];   //ela
+                    double getEra=featurePoints[1];   //era
+                    double getKla=featurePoints[10];  //kla
+                    double getKra=featurePoints[11];  //kra
 
-                        elaValue=getEla;
-                        eraValue=getEra;
-                        klaValue=getKla;
-                        kraValue=getKra;
-                    }
+                    elaSum=Math.Abs(getEla-elaValue) + elaSum;
+                    eraSum=Math.Abs(getEra-eraValue) + eraSum;
+                    klaSum=Math.Abs(getKla-klaValue) + klaSum;
+                    kraSum=Math.Abs(getKra-kraValue) + kraSum;
+
+                    elaValue=getEla;
+                    eraValue=getEra;
+                    klaValue=getKla;
+                    kraValue=getKra;
+
                 }
+                sw.WriteLine("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14}"," ", "sumX","sumY","sumY","euculidDistance","processTime","velocity","elaSum","elaVelocity","eraSum","eraVelocity","klaSum","klaVelocity","kraSum","kraVelocity");
+                sw.WriteLine("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14}", value,sumX,sumY,sumZ,euculidDistance,processTime,euculidDistance/processTime,elaSum,elaSum/processTime,eraSum,eraSum/processTime,klaSum,klaSum/processTime,kraSum,kraSum/processTime);
                 
-                sw.WriteLine(elaSum);
-                sw.WriteLine(elaSum/processTime);
-                sw.WriteLine(eraSum);
-                sw.WriteLine(eraSum/processTime);
-                sw.WriteLine(klaSum);
-                sw.WriteLine(klaSum/processTime);
-                sw.WriteLine(kraSum);
-                sw.WriteLine(kraSum/processTime);
                 sw.Close();
+                
                 }
 
+              
                 rateList.Clear();
                 featureList.Clear();
                 skeletonList.Clear();
@@ -460,7 +443,49 @@ namespace KinectTerminal
                 stopwatch.Reset();
                 processTime = 0.0f;
                 MessageBox.Show("포즈데이터를 저장했습니다.\n" + DateTime.Now.ToString(), path);
+                }
             }
         }
+
+        public static DialogResult InputBox(string title, string content, ref string value)
+        {
+         Form form = new Form();
+        // PictureBox picture = new PictureBox();
+         Label label = new Label();
+         TextBox textBox = new TextBox();
+         Button buttonOk = new Button();
+         Button buttonCancel = new Button();
+
+         form.ClientSize = new Size(300, 100);
+         form.Controls.AddRange(new Control[] { label, textBox, buttonOk, buttonCancel });
+         form.FormBorderStyle = FormBorderStyle.FixedDialog;
+         form.StartPosition = FormStartPosition.CenterScreen;
+         form.MaximizeBox = false;
+         form.MinimizeBox = false;
+         form.AcceptButton = buttonOk;
+         form.CancelButton = buttonCancel;
+
+         form.Text = title;
+        // picture.Image = Properties.Resources.Clogo;
+        // picture.SizeMode = PictureBoxSizeMode.StretchImage;
+         label.Text = content;
+         textBox.Text = value;
+         buttonOk.Text = "OK";
+         buttonCancel.Text = "Cancel";
+
+         buttonOk.DialogResult = DialogResult.OK;
+         buttonCancel.DialogResult = DialogResult.Cancel;
+
+        // picture.SetBounds(10, 10, 50, 50);
+         label.SetBounds(65, 17, 100, 20);
+         textBox.SetBounds(65, 40, 220, 20);
+         buttonOk.SetBounds(135, 70, 70, 20);
+         buttonCancel.SetBounds(215, 70, 70, 20);
+
+         DialogResult dialogResult = form.ShowDialog();
+
+        value = textBox.Text;
+         return dialogResult;
+     }
     }
 }
